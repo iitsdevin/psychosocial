@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychosocial Risk Assessment Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Workplace Psychosocial Risk Assessment</h1>
+            <p class="subtitle">A comprehensive tool to evaluate psychosocial hazards in your workplace</p>
+        </header>
+
+        <div id="welcome-screen" class="screen active">
+            <div class="info-box">
+                <h2>About This Assessment</h2>
+                <p>This assessment helps identify and evaluate psychosocial risks in your workplace. Psychosocial hazards are aspects of work design, organization, and management that can cause psychological or physical harm.</p>
+
+                <h3>What We Assess:</h3>
+                <ul>
+                    <li><strong>Job Demands:</strong> Workload, time pressure, and emotional demands</li>
+                    <li><strong>Control & Autonomy:</strong> Decision-making authority and task flexibility</li>
+                    <li><strong>Manager Support:</strong> Guidance, feedback, and assistance from supervisors</li>
+                    <li><strong>Peer Support:</strong> Collaboration and support from colleagues</li>
+                    <li><strong>Relationships:</strong> Workplace culture, respect, and conflict management</li>
+                    <li><strong>Role Clarity:</strong> Understanding of responsibilities and expectations</li>
+                    <li><strong>Change Management:</strong> How organizational changes are communicated and managed</li>
+                </ul>
+
+                <h3>Instructions:</h3>
+                <p>Rate each statement based on your experience over the past 3 months. Be honest - your responses will help identify areas for improvement.</p>
+
+                <div class="form-group">
+                    <label for="assessor-name">Your Name (optional):</label>
+                    <input type="text" id="assessor-name" placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label for="department">Department/Team (optional):</label>
+                    <input type="text" id="department" placeholder="Enter department">
+                </div>
+
+                <button class="btn-primary" onclick="startAssessment()">Start Assessment</button>
+            </div>
+        </div>
+
+        <div id="assessment-screen" class="screen">
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <p class="progress-text">Section <span id="current-section">1</span> of <span id="total-sections">7</span></p>
+            </div>
+
+            <form id="assessment-form">
+                <!-- Job Demands -->
+                <div class="section" data-section="1">
+                    <h2>Job Demands</h2>
+                    <p class="section-description">Questions about workload, time pressure, and work intensity.</p>
+
+                    <div class="question">
+                        <label>1. I can cope with the demands of my job</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q1" value="5" id="q1-5"><label for="q1-5">Always</label>
+                            <input type="radio" name="q1" value="4" id="q1-4"><label for="q1-4">Often</label>
+                            <input type="radio" name="q1" value="3" id="q1-3"><label for="q1-3">Sometimes</label>
+                            <input type="radio" name="q1" value="2" id="q1-2"><label for="q1-2">Seldom</label>
+                            <input type="radio" name="q1" value="1" id="q1-1"><label for="q1-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>2. I have unachievable deadlines</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q2" value="1" id="q2-1"><label for="q2-1">Always</label>
+                            <input type="radio" name="q2" value="2" id="q2-2"><label for="q2-2">Often</label>
+                            <input type="radio" name="q2" value="3" id="q2-3"><label for="q2-3">Sometimes</label>
+                            <input type="radio" name="q2" value="4" id="q2-4"><label for="q2-4">Seldom</label>
+                            <input type="radio" name="q2" value="5" id="q2-5"><label for="q2-5">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>3. I have to work very intensively</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q3" value="1" id="q3-1"><label for="q3-1">Always</label>
+                            <input type="radio" name="q3" value="2" id="q3-2"><label for="q3-2">Often</label>
+                            <input type="radio" name="q3" value="3" id="q3-3"><label for="q3-3">Sometimes</label>
+                            <input type="radio" name="q3" value="4" id="q3-4"><label for="q3-4">Seldom</label>
+                            <input type="radio" name="q3" value="5" id="q3-5"><label for="q3-5">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>4. I have sufficient time to do my job well</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q4" value="5" id="q4-5"><label for="q4-5">Always</label>
+                            <input type="radio" name="q4" value="4" id="q4-4"><label for="q4-4">Often</label>
+                            <input type="radio" name="q4" value="3" id="q4-3"><label for="q4-3">Sometimes</label>
+                            <input type="radio" name="q4" value="2" id="q4-2"><label for="q4-2">Seldom</label>
+                            <input type="radio" name="q4" value="1" id="q4-1"><label for="q4-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>5. I am unable to take sufficient breaks</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q5" value="1" id="q5-1"><label for="q5-1">Always</label>
+                            <input type="radio" name="q5" value="2" id="q5-2"><label for="q5-2">Often</label>
+                            <input type="radio" name="q5" value="3" id="q5-3"><label for="q5-3">Sometimes</label>
+                            <input type="radio" name="q5" value="4" id="q5-4"><label for="q5-4">Seldom</label>
+                            <input type="radio" name="q5" value="5" id="q5-5"><label for="q5-5">Never</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Control & Autonomy -->
+                <div class="section" data-section="2" style="display: none;">
+                    <h2>Control & Autonomy</h2>
+                    <p class="section-description">Questions about your influence over your work and decision-making authority.</p>
+
+                    <div class="question">
+                        <label>6. I have a say in my own work speed</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q6" value="5" id="q6-5"><label for="q6-5">Always</label>
+                            <input type="radio" name="q6" value="4" id="q6-4"><label for="q6-4">Often</label>
+                            <input type="radio" name="q6" value="3" id="q6-3"><label for="q6-3">Sometimes</label>
+                            <input type="radio" name="q6" value="2" id="q6-2"><label for="q6-2">Seldom</label>
+                            <input type="radio" name="q6" value="1" id="q6-1"><label for="q6-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>7. I have a choice in deciding how I do my work</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q7" value="5" id="q7-5"><label for="q7-5">Always</label>
+                            <input type="radio" name="q7" value="4" id="q7-4"><label for="q7-4">Often</label>
+                            <input type="radio" name="q7" value="3" id="q7-3"><label for="q7-3">Sometimes</label>
+                            <input type="radio" name="q7" value="2" id="q7-2"><label for="q7-2">Seldom</label>
+                            <input type="radio" name="q7" value="1" id="q7-1"><label for="q7-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>8. I have a say in my own work pattern/schedule</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q8" value="5" id="q8-5"><label for="q8-5">Always</label>
+                            <input type="radio" name="q8" value="4" id="q8-4"><label for="q8-4">Often</label>
+                            <input type="radio" name="q8" value="3" id="q8-3"><label for="q8-3">Sometimes</label>
+                            <input type="radio" name="q8" value="2" id="q8-2"><label for="q8-2">Seldom</label>
+                            <input type="radio" name="q8" value="1" id="q8-1"><label for="q8-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>9. My working time can be flexible</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q9" value="5" id="q9-5"><label for="q9-5">Always</label>
+                            <input type="radio" name="q9" value="4" id="q9-4"><label for="q9-4">Often</label>
+                            <input type="radio" name="q9" value="3" id="q9-3"><label for="q9-3">Sometimes</label>
+                            <input type="radio" name="q9" value="2" id="q9-2"><label for="q9-2">Seldom</label>
+                            <input type="radio" name="q9" value="1" id="q9-1"><label for="q9-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>10. I can decide when to take a break</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q10" value="5" id="q10-5"><label for="q10-5">Always</label>
+                            <input type="radio" name="q10" value="4" id="q10-4"><label for="q10-4">Often</label>
+                            <input type="radio" name="q10" value="3" id="q10-3"><label for="q10-3">Sometimes</label>
+                            <input type="radio" name="q10" value="2" id="q10-2"><label for="q10-2">Seldom</label>
+                            <input type="radio" name="q10" value="1" id="q10-1"><label for="q10-1">Never</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manager Support -->
+                <div class="section" data-section="3" style="display: none;">
+                    <h2>Manager Support</h2>
+                    <p class="section-description">Questions about support, encouragement, and feedback from your manager.</p>
+
+                    <div class="question">
+                        <label>11. I am supported through emotionally demanding work</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q11" value="5" id="q11-5"><label for="q11-5">Always</label>
+                            <input type="radio" name="q11" value="4" id="q11-4"><label for="q11-4">Often</label>
+                            <input type="radio" name="q11" value="3" id="q11-3"><label for="q11-3">Sometimes</label>
+                            <input type="radio" name="q11" value="2" id="q11-2"><label for="q11-2">Seldom</label>
+                            <input type="radio" name="q11" value="1" id="q11-1"><label for="q11-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>12. My manager encourages me at work</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q12" value="5" id="q12-5"><label for="q12-5">Always</label>
+                            <input type="radio" name="q12" value="4" id="q12-4"><label for="q12-4">Often</label>
+                            <input type="radio" name="q12" value="3" id="q12-3"><label for="q12-3">Sometimes</label>
+                            <input type="radio" name="q12" value="2" id="q12-2"><label for="q12-2">Seldom</label>
+                            <input type="radio" name="q12" value="1" id="q12-1"><label for="q12-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>13. I receive the respect I deserve from my manager</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q13" value="5" id="q13-5"><label for="q13-5">Always</label>
+                            <input type="radio" name="q13" value="4" id="q13-4"><label for="q13-4">Often</label>
+                            <input type="radio" name="q13" value="3" id="q13-3"><label for="q13-3">Sometimes</label>
+                            <input type="radio" name="q13" value="2" id="q13-2"><label for="q13-2">Seldom</label>
+                            <input type="radio" name="q13" value="1" id="q13-1"><label for="q13-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>14. I receive adequate information and help from my manager</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q14" value="5" id="q14-5"><label for="q14-5">Always</label>
+                            <input type="radio" name="q14" value="4" id="q14-4"><label for="q14-4">Often</label>
+                            <input type="radio" name="q14" value="3" id="q14-3"><label for="q14-3">Sometimes</label>
+                            <input type="radio" name="q14" value="2" id="q14-2"><label for="q14-2">Seldom</label>
+                            <input type="radio" name="q14" value="1" id="q14-1"><label for="q14-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>15. My manager provides helpful feedback on my work</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q15" value="5" id="q15-5"><label for="q15-5">Always</label>
+                            <input type="radio" name="q15" value="4" id="q15-4"><label for="q15-4">Often</label>
+                            <input type="radio" name="q15" value="3" id="q15-3"><label for="q15-3">Sometimes</label>
+                            <input type="radio" name="q15" value="2" id="q15-2"><label for="q15-2">Seldom</label>
+                            <input type="radio" name="q15" value="1" id="q15-1"><label for="q15-1">Never</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Peer Support -->
+                <div class="section" data-section="4" style="display: none;">
+                    <h2>Peer Support</h2>
+                    <p class="section-description">Questions about support and collaboration with colleagues.</p>
+
+                    <div class="question">
+                        <label>16. I get help and support from my colleagues</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q16" value="5" id="q16-5"><label for="q16-5">Always</label>
+                            <input type="radio" name="q16" value="4" id="q16-4"><label for="q16-4">Often</label>
+                            <input type="radio" name="q16" value="3" id="q16-3"><label for="q16-3">Sometimes</label>
+                            <input type="radio" name="q16" value="2" id="q16-2"><label for="q16-2">Seldom</label>
+                            <input type="radio" name="q16" value="1" id="q16-1"><label for="q16-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>17. My colleagues are willing to listen to my work-related problems</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q17" value="5" id="q17-5"><label for="q17-5">Always</label>
+                            <input type="radio" name="q17" value="4" id="q17-4"><label for="q17-4">Often</label>
+                            <input type="radio" name="q17" value="3" id="q17-3"><label for="q17-3">Sometimes</label>
+                            <input type="radio" name="q17" value="2" id="q17-2"><label for="q17-2">Seldom</label>
+                            <input type="radio" name="q17" value="1" id="q17-1"><label for="q17-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>18. I receive the respect I deserve from my colleagues</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q18" value="5" id="q18-5"><label for="q18-5">Always</label>
+                            <input type="radio" name="q18" value="4" id="q18-4"><label for="q18-4">Often</label>
+                            <input type="radio" name="q18" value="3" id="q18-3"><label for="q18-3">Sometimes</label>
+                            <input type="radio" name="q18" value="2" id="q18-2"><label for="q18-2">Seldom</label>
+                            <input type="radio" name="q18" value="1" id="q18-1"><label for="q18-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>19. When I'm having difficulties, I can rely on my colleagues</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q19" value="5" id="q19-5"><label for="q19-5">Always</label>
+                            <input type="radio" name="q19" value="4" id="q19-4"><label for="q19-4">Often</label>
+                            <input type="radio" name="q19" value="3" id="q19-3"><label for="q19-3">Sometimes</label>
+                            <input type="radio" name="q19" value="2" id="q19-2"><label for="q19-2">Seldom</label>
+                            <input type="radio" name="q19" value="1" id="q19-1"><label for="q19-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>20. My colleagues provide helpful feedback on my work</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q20" value="5" id="q20-5"><label for="q20-5">Always</label>
+                            <input type="radio" name="q20" value="4" id="q20-4"><label for="q20-4">Often</label>
+                            <input type="radio" name="q20" value="3" id="q20-3"><label for="q20-3">Sometimes</label>
+                            <input type="radio" name="q20" value="2" id="q20-2"><label for="q20-2">Seldom</label>
+                            <input type="radio" name="q20" value="1" id="q20-1"><label for="q20-1">Never</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Relationships -->
+                <div class="section" data-section="5" style="display: none;">
+                    <h2>Relationships</h2>
+                    <p class="section-description">Questions about workplace culture, respect, and conflict.</p>
+
+                    <div class="question">
+                        <label>21. I am subject to bullying at work</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q21" value="5" id="q21-5"><label for="q21-5">Never</label>
+                            <input type="radio" name="q21" value="4" id="q21-4"><label for="q21-4">Seldom</label>
+                            <input type="radio" name="q21" value="3" id="q21-3"><label for="q21-3">Sometimes</label>
+                            <input type="radio" name="q21" value="2" id="q21-2"><label for="q21-2">Often</label>
+                            <input type="radio" name="q21" value="1" id="q21-1"><label for="q21-1">Always</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>22. I am subject to personal harassment (e.g., jokes, insults)</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q22" value="5" id="q22-5"><label for="q22-5">Never</label>
+                            <input type="radio" name="q22" value="4" id="q22-4"><label for="q22-4">Seldom</label>
+                            <input type="radio" name="q22" value="3" id="q22-3"><label for="q22-3">Sometimes</label>
+                            <input type="radio" name="q22" value="2" id="q22-2"><label for="q22-2">Often</label>
+                            <input type="radio" name="q22" value="1" id="q22-1"><label for="q22-1">Always</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>23. There is friction or anger between colleagues</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q23" value="5" id="q23-5"><label for="q23-5">Never</label>
+                            <input type="radio" name="q23" value="4" id="q23-4"><label for="q23-4">Seldom</label>
+                            <input type="radio" name="q23" value="3" id="q23-3"><label for="q23-3">Sometimes</label>
+                            <input type="radio" name="q23" value="2" id="q23-2"><label for="q23-2">Often</label>
+                            <input type="radio" name="q23" value="1" id="q23-1"><label for="q23-1">Always</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>24. Relationships at work are strained</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q24" value="5" id="q24-5"><label for="q24-5">Never</label>
+                            <input type="radio" name="q24" value="4" id="q24-4"><label for="q24-4">Seldom</label>
+                            <input type="radio" name="q24" value="3" id="q24-3"><label for="q24-3">Sometimes</label>
+                            <input type="radio" name="q24" value="2" id="q24-2"><label for="q24-2">Often</label>
+                            <input type="radio" name="q24" value="1" id="q24-1"><label for="q24-1">Always</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>25. People at work treat each other with respect</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q25" value="5" id="q25-5"><label for="q25-5">Always</label>
+                            <input type="radio" name="q25" value="4" id="q25-4"><label for="q25-4">Often</label>
+                            <input type="radio" name="q25" value="3" id="q25-3"><label for="q25-3">Sometimes</label>
+                            <input type="radio" name="q25" value="2" id="q25-2"><label for="q25-2">Seldom</label>
+                            <input type="radio" name="q25" value="1" id="q25-1"><label for="q25-1">Never</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role Clarity -->
+                <div class="section" data-section="6" style="display: none;">
+                    <h2>Role Clarity</h2>
+                    <p class="section-description">Questions about understanding your role and responsibilities.</p>
+
+                    <div class="question">
+                        <label>26. I am clear what is expected of me at work</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q26" value="5" id="q26-5"><label for="q26-5">Always</label>
+                            <input type="radio" name="q26" value="4" id="q26-4"><label for="q26-4">Often</label>
+                            <input type="radio" name="q26" value="3" id="q26-3"><label for="q26-3">Sometimes</label>
+                            <input type="radio" name="q26" value="2" id="q26-2"><label for="q26-2">Seldom</label>
+                            <input type="radio" name="q26" value="1" id="q26-1"><label for="q26-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>27. I know how to go about getting my job done</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q27" value="5" id="q27-5"><label for="q27-5">Always</label>
+                            <input type="radio" name="q27" value="4" id="q27-4"><label for="q27-4">Often</label>
+                            <input type="radio" name="q27" value="3" id="q27-3"><label for="q27-3">Sometimes</label>
+                            <input type="radio" name="q27" value="2" id="q27-2"><label for="q27-2">Seldom</label>
+                            <input type="radio" name="q27" value="1" id="q27-1"><label for="q27-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>28. I understand how my work fits into the overall aim of the organization</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q28" value="5" id="q28-5"><label for="q28-5">Always</label>
+                            <input type="radio" name="q28" value="4" id="q28-4"><label for="q28-4">Often</label>
+                            <input type="radio" name="q28" value="3" id="q28-3"><label for="q28-3">Sometimes</label>
+                            <input type="radio" name="q28" value="2" id="q28-2"><label for="q28-2">Seldom</label>
+                            <input type="radio" name="q28" value="1" id="q28-1"><label for="q28-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>29. I receive conflicting demands at work</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q29" value="5" id="q29-5"><label for="q29-5">Never</label>
+                            <input type="radio" name="q29" value="4" id="q29-4"><label for="q29-4">Seldom</label>
+                            <input type="radio" name="q29" value="3" id="q29-3"><label for="q29-3">Sometimes</label>
+                            <input type="radio" name="q29" value="2" id="q29-2"><label for="q29-2">Often</label>
+                            <input type="radio" name="q29" value="1" id="q29-1"><label for="q29-1">Always</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>30. I know what my responsibilities are</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q30" value="5" id="q30-5"><label for="q30-5">Always</label>
+                            <input type="radio" name="q30" value="4" id="q30-4"><label for="q30-4">Often</label>
+                            <input type="radio" name="q30" value="3" id="q30-3"><label for="q30-3">Sometimes</label>
+                            <input type="radio" name="q30" value="2" id="q30-2"><label for="q30-2">Seldom</label>
+                            <input type="radio" name="q30" value="1" id="q30-1"><label for="q30-1">Never</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Change Management -->
+                <div class="section" data-section="7" style="display: none;">
+                    <h2>Change Management</h2>
+                    <p class="section-description">Questions about how changes are communicated and managed.</p>
+
+                    <div class="question">
+                        <label>31. Staff are consulted about changes at work</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q31" value="5" id="q31-5"><label for="q31-5">Always</label>
+                            <input type="radio" name="q31" value="4" id="q31-4"><label for="q31-4">Often</label>
+                            <input type="radio" name="q31" value="3" id="q31-3"><label for="q31-3">Sometimes</label>
+                            <input type="radio" name="q31" value="2" id="q31-2"><label for="q31-2">Seldom</label>
+                            <input type="radio" name="q31" value="1" id="q31-1"><label for="q31-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>32. When changes are made, I am clear how they will work in practice</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q32" value="5" id="q32-5"><label for="q32-5">Always</label>
+                            <input type="radio" name="q32" value="4" id="q32-4"><label for="q32-4">Often</label>
+                            <input type="radio" name="q32" value="3" id="q32-3"><label for="q32-3">Sometimes</label>
+                            <input type="radio" name="q32" value="2" id="q32-2"><label for="q32-2">Seldom</label>
+                            <input type="radio" name="q32" value="1" id="q32-1"><label for="q32-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>33. The organization provides opportunities to discuss the impact of changes</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q33" value="5" id="q33-5"><label for="q33-5">Always</label>
+                            <input type="radio" name="q33" value="4" id="q33-4"><label for="q33-4">Often</label>
+                            <input type="radio" name="q33" value="3" id="q33-3"><label for="q33-3">Sometimes</label>
+                            <input type="radio" name="q33" value="2" id="q33-2"><label for="q33-2">Seldom</label>
+                            <input type="radio" name="q33" value="1" id="q33-1"><label for="q33-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>34. I have sufficient opportunities to question managers about change</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q34" value="5" id="q34-5"><label for="q34-5">Always</label>
+                            <input type="radio" name="q34" value="4" id="q34-4"><label for="q34-4">Often</label>
+                            <input type="radio" name="q34" value="3" id="q34-3"><label for="q34-3">Sometimes</label>
+                            <input type="radio" name="q34" value="2" id="q34-2"><label for="q34-2">Seldom</label>
+                            <input type="radio" name="q34" value="1" id="q34-1"><label for="q34-1">Never</label>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <label>35. Changes at work are communicated effectively</label>
+                        <div class="rating-scale">
+                            <input type="radio" name="q35" value="5" id="q35-5"><label for="q35-5">Always</label>
+                            <input type="radio" name="q35" value="4" id="q35-4"><label for="q35-4">Often</label>
+                            <input type="radio" name="q35" value="3" id="q35-3"><label for="q35-3">Sometimes</label>
+                            <input type="radio" name="q35" value="2" id="q35-2"><label for="q35-2">Seldom</label>
+                            <input type="radio" name="q35" value="1" id="q35-1"><label for="q35-1">Never</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button type="button" class="btn-secondary" id="prev-btn" onclick="previousSection()" style="display: none;">Previous</button>
+                    <button type="button" class="btn-primary" id="next-btn" onclick="nextSection()">Next Section</button>
+                    <button type="button" class="btn-primary" id="submit-btn" onclick="submitAssessment()" style="display: none;">View Results</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="results-screen" class="screen">
+            <h2>Your Psychosocial Risk Assessment Results</h2>
+
+            <div id="assessment-info" class="info-section"></div>
+
+            <div class="overall-score">
+                <h3>Overall Psychosocial Health Score</h3>
+                <div class="score-display">
+                    <div id="overall-score" class="score-number">0</div>
+                    <div id="overall-rating" class="score-rating">-</div>
+                </div>
+            </div>
+
+            <div id="results-chart" class="results-chart"></div>
+
+            <div id="category-results" class="category-results"></div>
+
+            <div class="recommendations">
+                <h3>Recommendations</h3>
+                <div id="recommendations-list"></div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-primary" onclick="printReport()">Print Report</button>
+                <button class="btn-secondary" onclick="restartAssessment()">Take New Assessment</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
