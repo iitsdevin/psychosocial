@@ -89,6 +89,7 @@ SI_REPLACEMENTS = {
     122: "It is not yet clear whether this service aligns with the panel of wellbeing service providers. The panel is non-mandatory and local procurement remains available - please check with us if you are unsure.",
     123: "As the query involves travel or accommodation: the funding may be used for travel and accommodation where it is required to support access to an eligible principal wellbeing activity, in line with the Official Travel Policy and the associated Official Air Travel and Travel Accommodation, Meal and Other Expenses procedures. Travellers cannot approve their own travel - please seek approval from an Assistant Director of Education or above prior to booking. The funding is not intended to be used solely for travel or accommodation.",
     124: "",  # Travel|No adds nothing to the email
+    11: "Does this involve travel or accommodation?",
     128: "Edit the response names or the yellow response text below. These options appear as buttons on the common response override slicer on the Interactive triage tab.",
 }
 
@@ -128,6 +129,11 @@ PRESETS = [
      "To answer briefly: the funding may be used for catering where the expenditure complies with the Expenditure on Hospitality procedures and is related to a principal wellbeing activity."
      + NL + "Please note that catering alone is not a principal wellbeing activity - it needs to be connected to an eligible wellbeing activity."),
 ]
+
+TRAVEL_MAYBE = ("It is not yet clear whether travel or accommodation will be involved. If it is, "
+                "it may be funded where it supports the eligible wellbeing activity, in line with "
+                "the Official Travel Policy - please check the approval requirements with us "
+                "before booking.")
 
 NEW_LINKS = [
     ("Official Air Travel procedures", "https://www.education.wa.edu.au/web/policies/-/official-air-travel-procedures"),
@@ -226,7 +232,9 @@ def main(src, out):
     body = ('IF(\'Preset responses\'!$F$2<>"",\'Preset responses\'!$F$2,'
             'IF(COUNTIF(\'Pivot source data\'!$J$40:$Q$40,"?*")=0,'
             '"[Select an answer in one or more question slicers above, or pick a common response override, to build the body of the email.]",'
-            "'Pivot source data'!$AA$40))")
+            'IF(\'Pivot source data\'!$AA$40="",'
+            '"[The answers selected so far do not add any wording to the email - answer more of the question slicers above.]",'
+            "'Pivot source data'!$AA$40)))")
     b35 = ('TRIM(IF($D$33="","Hi",$D$33)&" "&TRIM($E$33))&","&CHAR(10)&CHAR(10)&'
            'IF(TRIM($D$34)="","Thank you for reaching out regarding the principal wellbeing targeted funding.",'
            '"Thank you for reaching out regarding "&TRIM($D$34)&".")&CHAR(10)&CHAR(10)&'
@@ -269,11 +277,21 @@ def main(src, out):
             'IF(COUNTIF($J$40:$O$40,"?*")=0,"","To answer more thoroughly:"),$R$40:$Y$40))')
     s4 = sub_once(r'(<c r="AA40" t="str"><f>).*?(</f>)<v/>',
                   lambda mm: mm.group(1) + f_esc(aa40) + mm.group(2), s4, "sheet4 AA40")
-    # Guard Travel|No empty paragraph (INDEX would return 0)
-    y40 = ('IF($Q$40="","",IFERROR(T(INDEX(\'Response library\'!$D$2:$D$24,'
-           'MATCH("Travel|"&$Q$40,\'Response library\'!$E$2:$E$24,0))),""))')
+    # Guard Travel|No empty paragraph (INDEX would return 0); range covers the
+    # Travel|Maybe row added to the Response library below
+    y40 = ('IF($Q$40="","",IFERROR(T(INDEX(\'Response library\'!$D$2:$D$25,'
+           'MATCH("Travel|"&$Q$40,\'Response library\'!$E$2:$E$25,0))),""))')
     s4 = sub_once(r'(<c r="Y40" t="str"><f>).*?(</f>)<v/>',
                   lambda mm: mm.group(1) + f_esc(y40) + mm.group(2), s4, "sheet4 Y40")
+    # Give the Travel slicer table a third option (Maybe) so it is structurally
+    # identical to the seven other question tables
+    s4 = sub_once(r'(<row r="39"[^>]*>)(<c r="J39")',
+                  r'\1<c r="A39" t="s"><v>67</v></c><c r="B39"><f>SUBTOTAL(103,A39)</f></c>\2',
+                  s4, "sheet4 A39/B39")
+    s4 = sub_once(
+        r'<f>IF\(SUM\(\$B\$37:\$B\$38\)=1,INDEX\(\$A\$37:\$A\$38,MATCH\(1,\$B\$37:\$B\$38,0\)\),""\)</f>',
+        '<f>IF(SUM($B$37:$B$39)=1,INDEX($A$37:$A$39,MATCH(1,$B$37:$B$39,0)),"")</f>',
+        s4, "sheet4 Q40 range")
     # drop stale cached results so nothing shows pre-upgrade values before recalc
     s4 = re.sub(r'(</f>)<v(?: [^>]*)?>[^<]*</v>', r"\1", s4).replace("</f><v/>", "</f>")
     write("xl/worksheets/sheet4.xml", s4)
@@ -312,6 +330,25 @@ def main(src, out):
     t9 = t9.replace('ref="A5:C8"', 'ref="A5:C14"')
     t9 = re.sub(r'<filterColumn.*?</filterColumn>', '', t9, flags=re.S)
     write("xl/tables/table9.xml", t9)
+
+    # table8: include the new Maybe row
+    t8 = read("xl/tables/table8.xml")
+    t8 = t8.replace('ref="A36:B38"', 'ref="A36:B39"')
+    write("xl/tables/table8.xml", t8)
+
+    # ------------------------------------------ sheet6: Response library
+    # Add the Travel|Maybe row so every question offers Yes/No/Maybe
+    s6 = read("xl/worksheets/sheet6.xml")
+    s6 = s6.replace('<dimension ref="A1:E24"/>', '<dimension ref="A1:E25"/>')
+    s6 = s6.replace('<autoFilter ref="A1:E24"', '<autoFilter ref="A1:E25"')
+    row25 = ('<row r="25" spans="1:5" ht="48" customHeight="1" x14ac:dyDescent="0.25">'
+             '<c r="A25" s="5" t="s"><v>74</v></c><c r="B25" s="5" t="s"><v>11</v></c>'
+             '<c r="C25" s="6" t="s"><v>67</v></c>'
+             f'<c r="D25" s="10" t="inlineStr"><is><t xml:space="preserve">{xml_text(TRAVEL_MAYBE)}</t></is></c>'
+             '<c r="E25" s="5"><f>A25&amp;"|"&amp;C25</f></c></row>')
+    m6 = re.search(r'<row r="24".*?</row>', s6, re.S)
+    s6 = s6[:m6.end()] + row25 + s6[m6.end():]
+    write("xl/worksheets/sheet6.xml", s6)
 
     # --------------------------------------------- sheet5: Reference links
     s5 = read("xl/worksheets/sheet5.xml")
