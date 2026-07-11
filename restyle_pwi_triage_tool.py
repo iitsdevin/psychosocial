@@ -59,7 +59,8 @@ SI_REPLACEMENTS = {
     60: ("Select Yes, No or Maybe in the question slicers below - you do not need to answer "
          "every question; unanswered ones are simply left out of the draft. For recurring "
          "queries, pick a common response override instead. Then add a greeting, name and "
-         "topic under 'Draft email reply' and copy the finished draft into Outlook."),
+         "topic under 'Draft email reply' and copy the finished draft into Outlook. "
+         "To clear a slicer, click the funnel-with-x button in its top right corner."),
     61: ("Edit the modular wording on the Response library tab and the recurring full responses "
          "on the Preset responses tab. The draft remains a starting point: add case-specific "
          "detail and confirm the final advice against current Ikon guidance before sending."),
@@ -273,6 +274,8 @@ def main(src, out):
            'MATCH("Travel|"&$Q$40,\'Response library\'!$E$2:$E$24,0))),""))')
     s4 = sub_once(r'(<c r="Y40" t="str"><f>).*?(</f>)<v/>',
                   lambda mm: mm.group(1) + f_esc(y40) + mm.group(2), s4, "sheet4 Y40")
+    # drop stale cached results so nothing shows pre-upgrade values before recalc
+    s4 = re.sub(r'(</f>)<v(?: [^>]*)?>[^<]*</v>', r"\1", s4).replace("</f><v/>", "</f>")
     write("xl/worksheets/sheet4.xml", s4)
 
     # --------------------------------------------- sheet7: Preset responses
@@ -296,6 +299,12 @@ def main(src, out):
             f'<c r="C{r}" s="5"><f>SUBTOTAL(103,A{r})</f></c></row>')
     s7 = sub_once(r'<row r="7" spans="1:6".*?</row><row r="8" spans="1:6".*?</row>',
                   "".join(rows), s7, "sheet7 preset rows")
+    # Excel repairs the workbook if a table header cell differs from the
+    # tableColumn name ("Draft email body") - a defect inherited from the
+    # source draft. The editing hint stays in the instruction row above.
+    s7 = sub_once(r'<c r="B5" s="4" t="s"><v>131</v></c>',
+                  '<c r="B5" s="4" t="inlineStr"><is><t>Draft email body</t></is></c>',
+                  s7, "sheet7 B5 header")
     write("xl/worksheets/sheet7.xml", s7)
 
     # table9: extend to the 8 presets and clear the saved slicer filter
