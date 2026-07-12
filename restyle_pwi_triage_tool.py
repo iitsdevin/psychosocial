@@ -88,7 +88,7 @@ SI_REPLACEMENTS = {
     121: "This service sits outside the panel of wellbeing service providers. You can engage the provider through local procurement, following the rules for buying goods and services. For purchases under $50,000, the Buy goods and services under $50,000 Ikon service applies, and purchases of less than $5,000 are low-value procurements provided value for money has been considered.",
     122: "It is not yet clear whether this service aligns with the panel of wellbeing service providers. The panel is non-mandatory and local procurement remains available - please check with us if you are unsure.",
     123: "As the query involves travel or accommodation: the funding may be used for travel and accommodation where it is required to support access to an eligible principal wellbeing activity, in line with the Official Travel Policy and the associated Official Air Travel and Travel Accommodation, Meal and Other Expenses procedures. Travellers cannot approve their own travel - please seek approval from an Assistant Director of Education or above prior to booking. The funding is not intended to be used solely for travel or accommodation.",
-    124: "",  # Travel|No adds nothing to the email
+    124: "As the query does not involve travel or accommodation, no travel approvals apply.",
     11: "Does this involve travel or accommodation?",
     128: "Edit the response names or the yellow response text below. These options appear as buttons on the common response override slicer on the Interactive triage tab.",
 }
