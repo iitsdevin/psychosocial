@@ -277,10 +277,11 @@ def main(src, out):
             'IF(COUNTIF($J$40:$O$40,"?*")=0,"","To answer more thoroughly:"),$R$40:$Y$40))')
     s4 = sub_once(r'(<c r="AA40" t="str"><f>).*?(</f>)<v/>',
                   lambda mm: mm.group(1) + f_esc(aa40) + mm.group(2), s4, "sheet4 AA40")
-    # Guard Travel|No empty paragraph (INDEX would return 0); range covers the
+    # Same INDEX/MATCH shape as the other question paragraphs (no T() wrapper -
+    # it fails on long strings in some Excel builds); range covers the
     # Travel|Maybe row added to the Response library below
-    y40 = ('IF($Q$40="","",IFERROR(T(INDEX(\'Response library\'!$D$2:$D$25,'
-           'MATCH("Travel|"&$Q$40,\'Response library\'!$E$2:$E$25,0))),""))')
+    y40 = ('IF($Q$40="","",IFERROR(INDEX(\'Response library\'!$D$2:$D$25,'
+           'MATCH("Travel|"&$Q$40,\'Response library\'!$E$2:$E$25,0)),""))')
     s4 = sub_once(r'(<c r="Y40" t="str"><f>).*?(</f>)<v/>',
                   lambda mm: mm.group(1) + f_esc(y40) + mm.group(2), s4, "sheet4 Y40")
     # Give the Travel slicer table a third option (Maybe) so it is structurally
