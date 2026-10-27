@@ -1,283 +1,287 @@
 Attribute VB_Name = "PEEPOModule"
 Option Explicit
 
-' ---------------------------------------------------------------
-'  PEEPO Work-Factor Picker
-'  Run this macro (Alt+F8 > SelectPEEPOFactors) to select
-'  psychosocial factors and insert them into the
-'  "Outline any relevant work or non-work factors" cell.
-' ---------------------------------------------------------------
+' PEEPO work factor picker for the Level 1 PHIR Response.
+'
+' Double-click the blue "choose work factors" text in the Nature of Concern
+' table (or run PEEPO_ShowChecklist from Alt+F8). A tick-box checklist of the
+' PEEPO categories opens in the "Outline any relevant work or non-work
+' factors" cell. Tick the factors that apply, then double-click the blue
+' "insert the ticked factors" text (or run PEEPO_InsertTicked). The checklist
+' is replaced with the ticked factors as plain text, grouped by category.
+' This can be repeated as many times as needed; each run adds to the cell.
 
-Public Sub SelectPEEPOFactors()
-    Dim cats(1 To 5) As String
-    cats(1) = "People (Human Factors)"
-    cats(2) = "Equipment (Resources & Equipment)"
-    cats(3) = "Environment (Physical & Workplace)"
-    cats(4) = "Processes (Tasks & Procedures)"
-    cats(5) = "Organisation (System & Policy)"
+Private Const TARGET_LABEL As String = "Outline any relevant work or non-work factors"
+Private Const PICKER_BOOKMARK As String = "PEEPO_Checklist"
+Private Const TAG_PREFIX As String = "PEEPO|"
 
-    Dim menuText As String
-    menuText = "SELECT A CATEGORY" & vbCrLf & vbCrLf
-    menuText = menuText & "1 - People (Human Factors)" & vbCrLf
-    menuText = menuText & "2 - Equipment (Resources & Equipment)" & vbCrLf
-    menuText = menuText & "3 - Environment (Physical & Workplace)" & vbCrLf
-    menuText = menuText & "4 - Processes (Tasks & Procedures)" & vbCrLf
-    menuText = menuText & "5 - Organisation (System & Policy)" & vbCrLf
-    menuText = menuText & vbCrLf & "Enter number (or 0 when finished):"
+Private Function CategoryNames() As Variant
+    CategoryNames = Array( _
+        "People (Human Factors)", _
+        "Equipment (Resources & equipment)", _
+        "Environment (Physical and workplace environment)", _
+        "Processes (Tasks & procedures)", _
+        "Organisation (System and policy)")
+End Function
 
-    Dim allSelected As String
-    allSelected = ""
-
-    Do
-        Dim catChoice As String
-        catChoice = InputBox(menuText, "PEEPO Factor Selection")
-
-        If catChoice = "" Or catChoice = "0" Then Exit Do
-
-        Dim catNum As Long
-        catNum = Val(catChoice)
-
-        If catNum < 1 Or catNum > 5 Then
-            MsgBox "Please enter a number between 1 and 5.", vbExclamation
-        Else
-            Dim factorList As String
-            factorList = GetFactorsForCategory(catNum)
-
-            Dim selected As String
-            selected = InputBox(factorList, cats(catNum))
-
-            If selected <> "" Then
-                Dim result As String
-                result = ParseSelection(catNum, selected)
-                If result <> "" Then
-                    If allSelected <> "" Then
-                        allSelected = allSelected & vbCrLf
-                    End If
-                    allSelected = allSelected & cats(catNum) & ":" & vbCrLf & result
-                End If
-            End If
-        End If
-    Loop
-
-    If allSelected <> "" Then
-        InsertFactorsIntoTable allSelected
-    End If
-End Sub
-
-Private Function GetFactorsForCategory(catNum As Long) As String
+Private Function CategoryFactors(ByVal category As Long) As Variant
     Dim s As String
-    s = "Enter the numbers of applicable factors," & vbCrLf
-    s = s & "separated by commas (e.g. 1,3,5):" & vbCrLf & vbCrLf
-
-    Select Case catNum
+    Select Case category
+    Case 0
+        s = "Inadequate communication between staff"
+        s = s & "|Unreasonable behaviour by worker(s)"
+        s = s & "|Unreasonable behaviour by manager(s) or supervisor(s)"
+        s = s & "|Interpersonal conflict (unresolved or escalating)"
+        s = s & "|Fatigue or burnout"
+        s = s & "|Mental stress or psychological distress"
+        s = s & "|Exposure to traumatic event or material"
+        s = s & "|Personal issues affecting work capacity"
+        s = s & "|Incivility or inappropriate behaviour tolerated by peers"
     Case 1
-        s = s & "1 - Inadequate communication between staff" & vbCrLf
-        s = s & "2 - Unreasonable behaviour by worker(s)" & vbCrLf
-        s = s & "3 - Unreasonable behaviour by manager(s) or supervisor(s)" & vbCrLf
-        s = s & "4 - Interpersonal conflict (unresolved or escalating)" & vbCrLf
-        s = s & "5 - Fatigue or burnout" & vbCrLf
-        s = s & "6 - Mental stress or psychological distress" & vbCrLf
-        s = s & "7 - Exposure to traumatic event or material" & vbCrLf
-        s = s & "8 - Personal issues affecting work capacity" & vbCrLf
-        s = s & "9 - Incivility or inappropriate behaviour tolerated by peers"
+        s = "Insufficient staffing levels or resources to meet work demands"
+        s = s & "|Inadequate or unavailable tools and resources to do the job"
+        s = s & "|Insufficient training on psychosocial hazard identification or management"
+        s = s & "|Insufficient training for job demands or new tasks"
+        s = s & "|Lack of constructive feedback or performance support"
+        s = s & "|Inadequate access to employee assistance or support services"
+        s = s & "|Lack of information about reporting processes or support pathways"
+        s = s & "|Insufficient or inappropriate supervision"
+        s = s & "|Inadequate de-escalation tools or conflict resolution resources"
     Case 2
-        s = s & "1 - Insufficient staffing levels or resources" & vbCrLf
-        s = s & "2 - Inadequate or unavailable tools and resources" & vbCrLf
-        s = s & "3 - Insufficient training on psychosocial hazard ID or mgmt" & vbCrLf
-        s = s & "4 - Insufficient training for job demands or new tasks" & vbCrLf
-        s = s & "5 - Lack of constructive feedback or performance support" & vbCrLf
-        s = s & "6 - Inadequate access to employee assistance or support" & vbCrLf
-        s = s & "7 - Lack of info about reporting processes or support" & vbCrLf
-        s = s & "8 - Insufficient or inappropriate supervision" & vbCrLf
-        s = s & "9 - Inadequate de-escalation or conflict resolution resources"
+        s = "Adverse environmental conditions (noise, temperature, air quality)"
+        s = s & "|Poorly maintained or unclean facilities"
+        s = s & "|Workplace layout limiting supervision or support access"
+        s = s & "|Remote or isolated work location"
+        s = s & "|Natural events restricting travel or creating uncertainty"
+        s = s & "|Limited access to communication technology"
+        s = s & "|Blurring of boundaries between work and home life"
+        s = s & "|Workplace culture tolerating unreasonable behaviour"
+        s = s & "|Lack of diversity, respect, or inclusion in the workplace"
+        s = s & "|Limited opportunities for social interaction during work"
     Case 3
-        s = s & "1 - Adverse environmental conditions (noise, temp, air)" & vbCrLf
-        s = s & "2 - Poorly maintained or unclean facilities" & vbCrLf
-        s = s & "3 - Workplace layout limiting supervision or support" & vbCrLf
-        s = s & "4 - Remote or isolated work location" & vbCrLf
-        s = s & "5 - Natural events restricting travel or creating uncertainty" & vbCrLf
-        s = s & "6 - Limited access to communication technology" & vbCrLf
-        s = s & "7 - Blurring of boundaries between work and home life" & vbCrLf
-        s = s & "8 - Workplace culture tolerating unreasonable behaviour" & vbCrLf
-        s = s & "9 - Lack of diversity, respect, or inclusion" & vbCrLf
-        s = s & "10 - Limited opportunities for social interaction"
+        s = "No or inadequate policies for managing psychosocial hazards"
+        s = s & "|Policies or procedures not adhered to"
+        s = s & "|Procedures that cannot be applied as written or lack flexibility"
+        s = s & "|No or inadequate reporting and complaints processes"
+        s = s & "|Investigation or appeals process not affording natural justice"
+        s = s & "|No or inadequate incident response or investigation procedures"
+        s = s & "|Procedures that discriminate or lack fairness"
+        s = s & "|Inadequate rostering, hours of work, or fatigue management procedures"
+        s = s & "|Inadequate change management procedures"
+        s = s & "|No mechanism for impartially addressing behaviour by senior management"
     Case 4
-        s = s & "1 - No/inadequate policies for psychosocial hazards" & vbCrLf
-        s = s & "2 - Policies or procedures not adhered to" & vbCrLf
-        s = s & "3 - Procedures that lack flexibility or cannot be applied" & vbCrLf
-        s = s & "4 - No/inadequate reporting and complaints processes" & vbCrLf
-        s = s & "5 - Investigation/appeals not affording natural justice" & vbCrLf
-        s = s & "6 - No/inadequate incident response or investigation" & vbCrLf
-        s = s & "7 - Procedures that discriminate or lack fairness" & vbCrLf
-        s = s & "8 - Inadequate rostering, hours, or fatigue management" & vbCrLf
-        s = s & "9 - Inadequate change management procedures" & vbCrLf
-        s = s & "10 - No mechanism for addressing senior mgmt behaviour"
-    Case 5
-        s = s & "1 - Poor leadership practices or management style" & vbCrLf
-        s = s & "2 - Limited management accountability for psych hazards" & vbCrLf
-        s = s & "3 - Unclear or conflicting roles, responsibilities" & vbCrLf
-        s = s & "4 - Excessive work demands (cognitive, emotional, physical)" & vbCrLf
-        s = s & "5 - Workplace culture" & vbCrLf
-        s = s & "6 - Multiple interacting hazards not considered together" & vbCrLf
-        s = s & "7 - Low job control or autonomy" & vbCrLf
-        s = s & "8 - Lack of recognition or reward" & vbCrLf
-        s = s & "9 - Organisational injustice (unfairness, bias)" & vbCrLf
-        s = s & "10 - Inadequate consultation with workers" & vbCrLf
-        s = s & "11 - Poorly managed organisational change" & vbCrLf
-        s = s & "12 - Insecure work arrangements" & vbCrLf
-        s = s & "13 - Inadequate monitoring and review of controls"
+        s = "Poor leadership practices or management style"
+        s = s & "|Limited management accountability for psychosocial hazards"
+        s = s & "|Unclear or conflicting roles, responsibilities, or expectations"
+        s = s & "|Excessive work demands (cognitive, emotional, or physical)"
+        s = s & "|Workplace culture"
+        s = s & "|Multiple interacting psychosocial hazards not considered together"
+        s = s & "|Low job control or autonomy"
+        s = s & "|Lack of recognition or reward"
+        s = s & "|Organisational injustice (unfairness, bias, inconsistency)"
+        s = s & "|Inadequate consultation with workers on matters affecting them"
+        s = s & "|Poorly managed organisational change"
+        s = s & "|Insecure work arrangements"
+        s = s & "|Inadequate monitoring and review of existing controls"
     End Select
-
-    GetFactorsForCategory = s
+    CategoryFactors = Split(s, "|")
 End Function
 
-Private Function GetFactorText(catNum As Long, factorNum As Long) As String
-    Dim f As String
-    f = ""
-    Select Case catNum
-    Case 1
-        Select Case factorNum
-        Case 1: f = "Inadequate communication between staff"
-        Case 2: f = "Unreasonable behaviour by worker(s)"
-        Case 3: f = "Unreasonable behaviour by manager(s) or supervisor(s)"
-        Case 4: f = "Interpersonal conflict (unresolved or escalating)"
-        Case 5: f = "Fatigue or burnout"
-        Case 6: f = "Mental stress or psychological distress"
-        Case 7: f = "Exposure to traumatic event or material"
-        Case 8: f = "Personal issues affecting work capacity"
-        Case 9: f = "Incivility or inappropriate behaviour tolerated by peers"
-        End Select
-    Case 2
-        Select Case factorNum
-        Case 1: f = "Insufficient staffing levels or resources to meet work demands"
-        Case 2: f = "Inadequate or unavailable tools and resources to do the job"
-        Case 3: f = "Insufficient training on psychosocial hazard identification or management"
-        Case 4: f = "Insufficient training for job demands or new tasks"
-        Case 5: f = "Lack of constructive feedback or performance support"
-        Case 6: f = "Inadequate access to employee assistance or support services"
-        Case 7: f = "Lack of information about reporting processes or support pathways"
-        Case 8: f = "Insufficient or inappropriate supervision"
-        Case 9: f = "Inadequate de-escalation tools or conflict resolution resources"
-        End Select
-    Case 3
-        Select Case factorNum
-        Case 1: f = "Adverse environmental conditions (noise, temperature, air quality)"
-        Case 2: f = "Poorly maintained or unclean facilities"
-        Case 3: f = "Workplace layout limiting supervision or support access"
-        Case 4: f = "Remote or isolated work location"
-        Case 5: f = "Natural events restricting travel or creating uncertainty"
-        Case 6: f = "Limited access to communication technology"
-        Case 7: f = "Blurring of boundaries between work and home life"
-        Case 8: f = "Workplace culture tolerating unreasonable behaviour"
-        Case 9: f = "Lack of diversity, respect, or inclusion in the workplace"
-        Case 10: f = "Limited opportunities for social interaction during work"
-        End Select
-    Case 4
-        Select Case factorNum
-        Case 1: f = "No or inadequate policies for managing psychosocial hazards"
-        Case 2: f = "Policies or procedures not adhered to"
-        Case 3: f = "Procedures that cannot be applied as written or lack flexibility"
-        Case 4: f = "No or inadequate reporting and complaints processes"
-        Case 5: f = "Investigation or appeals process not affording natural justice"
-        Case 6: f = "No or inadequate incident response or investigation procedures"
-        Case 7: f = "Procedures that discriminate or lack fairness"
-        Case 8: f = "Inadequate rostering, hours of work, or fatigue management procedures"
-        Case 9: f = "Inadequate change management procedures"
-        Case 10: f = "No mechanism for impartially addressing behaviour by senior management"
-        End Select
-    Case 5
-        Select Case factorNum
-        Case 1: f = "Poor leadership practices or management style"
-        Case 2: f = "Limited management accountability for psychosocial hazards"
-        Case 3: f = "Unclear or conflicting roles, responsibilities, or expectations"
-        Case 4: f = "Excessive work demands (cognitive, emotional, or physical)"
-        Case 5: f = "Workplace culture"
-        Case 6: f = "Multiple interacting psychosocial hazards not considered together"
-        Case 7: f = "Low job control or autonomy"
-        Case 8: f = "Lack of recognition or reward"
-        Case 9: f = "Organisational injustice (unfairness, bias, inconsistency)"
-        Case 10: f = "Inadequate consultation with workers on matters affecting them"
-        Case 11: f = "Poorly managed organisational change"
-        Case 12: f = "Insecure work arrangements"
-        Case 13: f = "Inadequate monitoring and review of existing controls"
-        End Select
-    End Select
-    GetFactorText = f
-End Function
+Public Sub PEEPO_ShowChecklist()
+    Dim doc As Document
+    Set doc = ActiveDocument
 
-Private Function ParseSelection(catNum As Long, selection As String) As String
-    Dim parts() As String
-    parts = Split(selection, ",")
-    Dim result As String
-    result = ""
+    If doc.Bookmarks.Exists(PICKER_BOOKMARK) Then
+        MsgBox "The PEEPO checklist is already open in the table." & vbCr & vbCr & _
+               "Tick the factors that apply, then double-click the blue " & _
+               "'insert the ticked factors' text at the end of the list.", _
+               vbInformation, "PEEPO"
+        doc.Bookmarks(PICKER_BOOKMARK).Range.Characters(1).Select
+        Exit Sub
+    End If
+
+    Dim answerCell As Cell
+    Set answerCell = FindAnswerCell(doc)
+    If answerCell Is Nothing Then
+        MsgBox "Could not find the '" & TARGET_LABEL & "' row in the " & _
+               "Nature of Concern table.", vbExclamation, "PEEPO"
+        Exit Sub
+    End If
+
+    On Error GoTo Failed
+    Application.ScreenUpdating = False
+
+    ' Start the checklist on a new paragraph after anything already in the cell
+    Dim rng As Range
+    Set rng = answerCell.Range
+    rng.MoveEnd wdCharacter, -1
+    If Not IsBlank(rng.Text) Then
+        rng.Collapse wdCollapseEnd
+        rng.InsertParagraphAfter
+    End If
+    rng.Collapse wdCollapseEnd
+
+    ' One paragraph per line; kinds records what each paragraph is for
+    Dim cats As Variant, factors As Variant
+    Dim kinds As New Collection
+    Dim body As String
+    Dim c As Long, f As Long
+    cats = CategoryNames()
+    body = "Tick the factors that apply, then double-click the blue text at the end of this list."
+    kinds.Add "N"
+    For c = 0 To UBound(cats)
+        body = body & vbCr & cats(c)
+        kinds.Add "H"
+        factors = CategoryFactors(c)
+        For f = 0 To UBound(factors)
+            body = body & vbCr & " " & factors(f)
+            kinds.Add "F" & c & "|" & f
+        Next f
+    Next c
+    body = body & vbCr
+    kinds.Add "B"
+    rng.InsertAfter body
+
+    Dim region As Range
+    Set region = doc.Range(rng.Start, answerCell.Range.End - 1)
+    region.Font.Reset
+    region.Font.Size = 9
+    region.ParagraphFormat.SpaceBefore = 0
+    region.ParagraphFormat.SpaceAfter = 0
+
     Dim i As Long
-    For i = LBound(parts) To UBound(parts)
-        Dim num As Long
-        num = Val(Trim(parts(i)))
-        If num > 0 Then
-            Dim factorText As String
-            factorText = GetFactorText(catNum, num)
-            If factorText <> "" Then
-                result = result & "  - " & factorText & vbCrLf
+    Dim kind As String
+    Dim p As Range
+    Dim cc As ContentControl
+    For i = 1 To kinds.Count
+        kind = kinds(i)
+        Set p = region.Paragraphs(i).Range
+        Select Case Left$(kind, 1)
+        Case "N"
+            p.Font.Italic = True
+            p.Font.Color = wdColorGray50
+        Case "H"
+            p.Font.Bold = True
+            p.ParagraphFormat.SpaceBefore = 6
+        Case "F"
+            p.Collapse wdCollapseStart
+            Set cc = doc.ContentControls.Add(wdContentControlCheckBox, p)
+            cc.Tag = TAG_PREFIX & Mid$(kind, 2)
+        Case "B"
+            p.ParagraphFormat.SpaceBefore = 6
+            p.Collapse wdCollapseStart
+            doc.Fields.Add p, wdFieldEmpty, _
+                "MACROBUTTON PEEPO_InsertTicked [Double-click here to insert the ticked factors]", False
+            Set p = region.Paragraphs(i).Range
+            p.Font.Color = wdColorBlue
+            p.Font.Bold = True
+        End Select
+    Next i
+
+    doc.Bookmarks.Add PICKER_BOOKMARK, doc.Range(region.Start, answerCell.Range.End - 1)
+    Application.ScreenUpdating = True
+    doc.Range(region.Start, region.Start).Select
+    Exit Sub
+
+Failed:
+    Application.ScreenUpdating = True
+    MsgBox "Could not open the PEEPO checklist: " & Err.Description, vbExclamation, "PEEPO"
+End Sub
+
+Public Sub PEEPO_InsertTicked()
+    Dim doc As Document
+    Set doc = ActiveDocument
+
+    If Not doc.Bookmarks.Exists(PICKER_BOOKMARK) Then
+        MsgBox "The PEEPO checklist is not open." & vbCr & vbCr & _
+               "Double-click the blue 'choose work factors' text in the " & _
+               "Nature of Concern table first.", vbInformation, "PEEPO"
+        Exit Sub
+    End If
+
+    Dim region As Range
+    Set region = doc.Bookmarks(PICKER_BOOKMARK).Range
+
+    ' Collect the ticked factors in checklist order, grouped by category
+    Dim cats As Variant, factors As Variant, parts As Variant
+    Dim cc As ContentControl
+    Dim summary As String
+    Dim lastCat As Long, ticked As Long
+    cats = CategoryNames()
+    lastCat = -1
+    For Each cc In region.ContentControls
+        If cc.Type = wdContentControlCheckBox And Left$(cc.Tag, Len(TAG_PREFIX)) = TAG_PREFIX Then
+            If cc.Checked Then
+                parts = Split(Mid$(cc.Tag, Len(TAG_PREFIX) + 1), "|")
+                If CLng(parts(0)) <> lastCat Then
+                    lastCat = CLng(parts(0))
+                    If Len(summary) > 0 Then summary = summary & vbCr
+                    summary = summary & cats(lastCat) & ":"
+                End If
+                factors = CategoryFactors(lastCat)
+                summary = summary & vbCr & ChrW(8226) & " " & factors(CLng(parts(1)))
+                ticked = ticked + 1
             End If
         End If
+    Next cc
+
+    If ticked = 0 Then
+        If MsgBox("No factors are ticked." & vbCr & vbCr & _
+                  "Close the checklist without adding anything?", _
+                  vbYesNo + vbQuestion, "PEEPO") = vbNo Then Exit Sub
+    End If
+
+    On Error GoTo Failed
+    Application.ScreenUpdating = False
+
+    Dim startPos As Long, i As Long
+    startPos = region.Start
+    doc.Bookmarks(PICKER_BOOKMARK).Delete
+    For i = region.ContentControls.Count To 1 Step -1
+        region.ContentControls(i).Delete True
     Next i
-    ParseSelection = result
+    region.Delete
+
+    Dim outRng As Range
+    Set outRng = doc.Range(startPos, startPos)
+    If ticked > 0 Then
+        outRng.InsertAfter summary
+        outRng.Font.Reset
+        Dim para As Paragraph
+        For Each para In outRng.Paragraphs
+            para.Range.Font.Bold = (Left$(para.Range.Text, 1) <> ChrW(8226))
+        Next para
+    ElseIf startPos > outRng.Cells(1).Range.Start Then
+        ' Remove the empty paragraph the checklist was added on
+        doc.Range(startPos - 1, startPos).Delete
+    End If
+
+    Application.ScreenUpdating = True
+    Exit Sub
+
+Failed:
+    Application.ScreenUpdating = True
+    MsgBox "Could not insert the ticked factors: " & Err.Description, vbExclamation, "PEEPO"
+End Sub
+
+Private Function FindAnswerCell(ByVal doc As Document) As Cell
+    Dim tbl As Table
+    Dim c As Cell
+    For Each tbl In doc.Tables
+        For Each c In tbl.Range.Cells
+            If InStr(1, c.Range.Text, TARGET_LABEL, vbTextCompare) > 0 Then
+                ' The answer cell is the cell straight after the label
+                Set FindAnswerCell = c.Next
+                Exit Function
+            End If
+        Next c
+    Next tbl
 End Function
 
-Public Sub InsertFactorsIntoTable(ByVal factorText As String)
-    Dim tbl As Table
-    Dim targetCell As Cell
-    Dim found As Boolean
-    found = False
-    Dim r As Long
-    Dim c As Long
-
-    For Each tbl In ActiveDocument.Tables
-        For r = 1 To tbl.Rows.Count
-            For c = 1 To tbl.Columns.Count
-                On Error Resume Next
-                Dim cellText As String
-                cellText = ""
-                cellText = tbl.Cell(r, c).Range.Text
-                On Error GoTo 0
-                If InStr(1, cellText, "Outline any relevant work or non-work factors", vbTextCompare) > 0 Then
-                    On Error Resume Next
-                    Set targetCell = tbl.Cell(r + 1, 1)
-                    If targetCell Is Nothing Then
-                        Set targetCell = tbl.Cell(r + 1, c)
-                    End If
-                    On Error GoTo 0
-                    If Not targetCell Is Nothing Then
-                        found = True
-                        GoTo FoundIt
-                    End If
-                End If
-            Next c
-        Next r
-    Next tbl
-
-FoundIt:
-    If found Then
-        Dim rng As Range
-        Set rng = targetCell.Range
-        rng.End = rng.End - 1
-
-        Dim existingText As String
-        existingText = Trim(rng.Text)
-
-        If existingText <> "" Then
-            rng.Collapse Direction:=0
-            rng.InsertAfter vbCr & vbCr & factorText
-        Else
-            rng.Text = factorText
-        End If
-
-        MsgBox "Factors inserted successfully into the table.", vbInformation, "PEEPO"
-    Else
-        MsgBox "Could not find the target cell." & vbCrLf & vbCrLf & _
-               "Please ensure this document contains the Nature of Concerns " & _
-               "table with the row 'Outline any relevant work or non-work factors'.", _
-               vbExclamation, "PEEPO"
-    End If
-End Sub
+Private Function IsBlank(ByVal s As String) As Boolean
+    s = Replace(s, vbCr, "")
+    s = Replace(s, Chr(7), "")
+    s = Replace(s, Chr(11), "")
+    s = Replace(s, vbTab, "")
+    IsBlank = (Len(Trim$(s)) = 0)
+End Function
